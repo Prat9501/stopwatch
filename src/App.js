@@ -7,8 +7,9 @@ function padTime(time) {
 
 export default function App() {
   const [title, setTitle] = useState("Let countdown begins!!!");
-  const[timeLeft, setTimeLeft] = useState(10);
+  const[timeLeft, setTimeLeft] = useState(20);
   const [isRunning, setIsRunning] = useState(false);
+  const [isLimit, setIsLimit] = useState(false);
   const interval = useRef(null);
 
   function startTimer(){
@@ -17,8 +18,12 @@ export default function App() {
     setIsRunning(true);
     interval.current = setInterval(() => {
       setTimeLeft(timeLeft => {
+        if (timeLeft <= 15) {
+          setIsLimit(true);
+          setTitle(`Time is running out, Be Quick`);
+        }
         if (timeLeft >= 1) return timeLeft - 1;
-        resetTimer();
+        // resetTimer();
         return 0;
     })}, 1000)
   }
@@ -39,15 +44,19 @@ export default function App() {
     setIsRunning(false);
   }
 
-  const minutes = padTime(Math.floor(timeLeft/60));
-  const seconds = padTime(timeLeft - minutes * 60);
+  const hours = padTime(Math.floor(timeLeft/(60*60)));
+  const minutes = padTime(Math.floor(timeLeft/60) - (hours*60));
+  const seconds = padTime(Math.floor((timeLeft - (hours*3600))-(minutes*60)));
 
 
   return (
     <div className="app">
+      {isLimit && <img src={require('./images/clock.png')} width='50px'></img>}
       <h2>{title}</h2>
 
       <div className="timer">
+        <span>{hours}</span>
+        <span>:</span>
         <span>{minutes}</span>
         <span>:</span>
         <span>{seconds}</span>
